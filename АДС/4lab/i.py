@@ -10,13 +10,10 @@ def main():
     right = [0] * (n + 1)
 
     root = 1
-    level_sum = [p[0]]
     for i in range(2, n + 1):
         val = p[i - 1]
         cur = root
-        d = 0
         while True:
-            d += 1
             if val < p[cur - 1]:
                 if left[cur] == 0:
                     left[cur] = i
@@ -27,12 +24,12 @@ def main():
                     right[cur] = i
                     break
                 cur = right[cur]
-        if d == len(level_sum):
-            level_sum.append(val)
-        else:
-            level_sum[d] += val
 
-    print(len(level_sum))
-    print(" ".join(map(str, level_sum)))
+    count = 0
+    for node in range(1, n + 1):
+        if left[node] == 0 and right[node] == 0:
+            count += 1
 
-main()  
+    print(count)
+
+main()

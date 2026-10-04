@@ -4,20 +4,17 @@ def main():
     data = sys.stdin.read().split()
     idx = 0
     n = int(data[idx]); idx += 1
-    p = list(map(int, data[idx:idx+n])); idx += n
+    a = list(map(int, data[idx:idx+n])); idx += n
 
     left = [0] * (n + 1)
     right = [0] * (n + 1)
 
     root = 1
-    level_sum = [p[0]]
     for i in range(2, n + 1):
-        val = p[i - 1]
+        val = a[i - 1]
         cur = root
-        d = 0
         while True:
-            d += 1
-            if val < p[cur - 1]:
+            if val < a[cur - 1]:
                 if left[cur] == 0:
                     left[cur] = i
                     break
@@ -27,12 +24,20 @@ def main():
                     right[cur] = i
                     break
                 cur = right[cur]
-        if d == len(level_sum):
-            level_sum.append(val)
-        else:
-            level_sum[d] += val
 
-    print(len(level_sum))
-    print(" ".join(map(str, level_sum)))
+    out = []
+    total = 0
+    stack = []
+    node = root
+    while stack or node:
+        while node:
+            stack.append(node)
+            node = right[node]
+        node = stack.pop()
+        total += a[node - 1]
+        out.append(str(total))
+        node = left[node]
 
-main()  
+    print(" ".join(out))
+
+main()
