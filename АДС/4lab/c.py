@@ -5,7 +5,7 @@ def main():
     idx = 0
     n = int(data[idx]); idx += 1
     a = list(map(int, data[idx:idx+n])); idx += n
-    x = int(data[idx]); idx += 1
+    k = int(data[idx]); idx += 1
 
     left = [0] * (n + 1)
     right = [0] * (n + 1)
@@ -26,28 +26,23 @@ def main():
                     break
                 cur = right[cur]
 
-    cur = root
-    while a[cur - 1] != x:
-        if x < a[cur - 1]:
-            cur = left[cur]
+    start = root
+    while a[start - 1] != k:
+        if k < a[start - 1]:
+            start = left[start]
         else:
-            cur = right[cur]
+            start = right[start]
 
-    size = [0] * (n + 1)
-    stack = [(cur, False)]
+    out = []
+    stack = [start]
     while stack:
-        node, processed = stack.pop()
-        if node == 0:
-            continue
-        if processed:
-            size[node] = 1 + size[left[node]] + size[right[node]]
-        else:
-            stack.append((node, True))
-            if left[node]:
-                stack.append((left[node], False))
-            if right[node]:
-                stack.append((right[node], False))
+        node = stack.pop()
+        out.append(str(a[node - 1]))
+        if right[node]:
+            stack.append(right[node])
+        if left[node]:
+            stack.append(left[node])
 
-    print(size[cur])
+    print(" ".join(out))
 
 main()
