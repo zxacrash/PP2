@@ -5,50 +5,53 @@ def main():
     data = sys.stdin.read().split()
     idx = 0
     n = int(data[idx]); idx += 1
-    vals = list(map(int, data[idx:idx+n])); idx += n
+    raw = list(map(int, data[idx:idx+n])); idx += n
 
-    MAXN = n + 1
-    node_val = [0] * MAXN
-    left = [0] * MAXN
-    right = [0] * MAXN
-    parent = [0] * MAXN
-    seen = {}
+    t = {}
+    order = 0
+    for v in raw:
+        if v not in t:
+            order += 1
+            t[v] = order
 
-    cnt = 0
-    root = 0
-    for v in vals:
-        if v in seen:
-            continue
-        cnt += 1
-        node_val[cnt] = v
-        seen[v] = cnt
-        if root == 0:
-            root = cnt
-            continue
-        cur = root
-        while True:
-            if v < node_val[cur]:
-                if left[cur] == 0:
-                    left[cur] = cnt
-                    parent[cnt] = cur
-                    break
-                cur = left[cur]
-            else:
-                if right[cur] == 0:
-                    right[cur] = cnt
-                    parent[cnt] = cur
-                    break
-                cur = right[cur]
+    sorted_vals = sorted(t.keys())
+    m = len(sorted_vals)
+    A = [t[v] for v in sorted_vals]
+
+    left = [-1] * m
+    right = [-1] * m
+    stack = []
+
+    for i in range(m):
+        last = -1
+        while stack and A[stack[-1]] > A[i]:
+            last = stack.pop()
+        if stack:
+            right[stack[-1]] = i
+        if last != -1:
+            left[i] = last
+        stack.append(i)
+
+    root = stack[0]
+
+    adj = [[] for _ in range(m)]
+    for i in range(m):
+        if left[i] != -1:
+            adj[i].append(left[i])
+            adj[left[i]].append(i)
+        if right[i] != -1:
+            adj[i].append(right[i])
+            adj[right[i]].append(i)
 
     def bfs(start):
-        dist = [-1] * (cnt + 1)
+        dist = [-1] * m
         dist[start] = 0
         q = deque([start])
         farthest = start
         while q:
             u = q.popleft()
-            for w in (left[u], right[u], parent[u]):
-                if w != 0 and dist[w] == -1:
+            for w in adj[u]:
+                if dist[w] == -1:
                     dist[w] = dist[u] + 1
                     if dist[w] > dist[farthest]:
                         farthest = w
